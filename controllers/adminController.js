@@ -51,7 +51,13 @@ export const adminLogin = async (req, res, next) => {
         }
 
         const token = generateToken(email, "admin");
-        res.cookie("token", token);
+        const cookieOptions = {
+            sameSite: 'None',
+            secure: true,
+            httpOnly: true,
+        };
+         res.cookie('token',token,cookieOptions)
+        // res.cookie("token", token);
         res.json({ success: true, message: "Admin logged in successfully" });
     } catch (error) {
         res.status(error.status || 500).json({ message: error.message || "Internal server error" });
