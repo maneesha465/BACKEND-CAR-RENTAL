@@ -133,3 +133,62 @@ export const checkUser = async (req, res, next) => {
         res.status(error.status || 500).json({ message: error.message || "Internal server error" });
     }
 };
+
+export const editUser = async (req, res) => {
+    try {
+        const userId = req.params.id; // Get user ID from URL parameter
+        const { name, email, mobile, password } = req.body;
+
+        // Initialize the update object
+        const updateData = {};
+
+        // Check and set fields for update
+        if (name) updateData.name = name;
+        if (email) updateData.email = email;
+        if (mobile) updateData.mobile = mobile;
+
+        // Handle password update if provided
+        if (password) {
+            const salt = 10;
+            updateData.password = bcrypt.hashSync(password, salt);
+        }
+
+        // Handle profile picture upload if present
+        if (req.file) {
+            try {
+                const uploadResult = await cloudinaryInstance.uploader.upload(req.file.path);
+                if (uploadResult?.url) {
+                    updateData.profilePic = uploadResult.url;
+                }
+            } catch (error) {
+                console.log(error);
+                return res.status(500).json({ success: false, message: "Failed to upload image" });
+            }
+        }
+
+        // Update the user in the database
+        const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true }).select("-password");
+
+        if (!updatedUser) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        res.json({ success: true, message: 'User updated successfully', data: updatedUser });
+    } catch (error) {
+        res.status(error.status || 500).json({ message: error.message || "Internal server error" });
+    }
+};
+
+
+// export const getUserById = async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const user = await User.findById(id).select("-password");
+//         if (!user) {
+//             return res.status(404).json({ success: false, message: "User not found" });
+//         }
+//         res.json({ success: true, message: "User fetched successfully", data: user });
+//     } catch (error) {
+//         res.status(error.status || 500).json({ message: error.message || "Internal server error" });
+//     }
+// };

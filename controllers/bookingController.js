@@ -60,17 +60,23 @@ export const createBooking = async (req, res, next) => {
             pickupDate,
             dropOffDate,
             totalCost,
+            status: 'booked' // Add status field
         });
 
         console.log('New booking:', newBooking);
 
-        await newBooking.save();
+        // Save the booking
+        const savedBooking = await newBooking.save();
 
         // Update car availability
         carData.availability = false;
         await carData.save();
 
-        res.status(201).json({ success: true, message: 'Booking created successfully', bookingId: newBooking._id });
+        res.status(201).json({
+            success: true,
+            message: 'Booking created successfully',
+            data: savedBooking // Return the complete booking data
+        });
     } catch (error) {
         console.error('Error creating booking:', error);
         return res.status(500).json({ success: false, message: 'Failed to create booking', error }); // Pass error to global error handler
