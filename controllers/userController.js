@@ -100,7 +100,11 @@ export const userLogin = async (req, res) => {
 };
 export const userLogout = async (req, res, next) => {
     try {
-        res.clearCookie("token");
+        res.clearCookie("token", {
+            sameSite: "None",
+            secure: true,
+            httpOnly: true,
+        });
 
         res.json({ success: true, message: "user logout successfully" });
     } catch (error) {

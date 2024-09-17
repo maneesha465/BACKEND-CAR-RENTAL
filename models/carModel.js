@@ -44,7 +44,8 @@ const carSchema = new mongoose.Schema({
     availability : {
         type: Boolean,
         default: true
-    }
+    },
+   
 }, { timestamps: true });
 
 export const Car = mongoose.model('Car', carSchema);
