@@ -56,10 +56,9 @@ export const createReview = async (req, res) => {
 };
 
 
-// Get reviews for a specific car
 export const getReviewsByCar = async (req, res) => {
   try {
-    const { carId } = req.params;
+    const carId = req.params.id; // Directly access `id`
 
     // Check if the car exists
     const car = await Car.findById(carId);
@@ -67,8 +66,11 @@ export const getReviewsByCar = async (req, res) => {
       return res.status(404).json({ message: 'Car not found' });
     }
 
-    // Get reviews for the car, populate user data (name only)
-    const reviews = await Review.find({ car: carId }).populate('user', 'name');
+    // Get reviews for the car and populate user data (name only)
+    const reviews = await Review.find({ car: carId }).populate({
+      path: 'user',
+      select:'name'
+    });
 
     res.status(200).json({ reviews });
   } catch (error) {

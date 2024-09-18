@@ -125,3 +125,33 @@ export const getUserBookings = async (req, res) => {
     }
   };
     
+
+
+// backend/controller/bookingController.js
+export const getBookingById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Validate the booking ID
+        if (!isValidObjectId(id)) {
+            return res.status(400).json({ success: false, message: 'Invalid booking ID' });
+        }
+
+        // Fetch booking by ID
+        const booking = await Booking.findById(id).populate('user').populate('car');
+        
+        // Check if booking exists
+        if (!booking) {
+            return res.status(404).json({ success: false, message: 'Booking not found' });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Booking details retrieved successfully',
+            data: booking
+        });
+    } catch (error) {
+        console.error('Error fetching booking:', error);
+        return res.status(500).json({ success: false, message: 'Failed to fetch booking', error });
+    }
+};

@@ -184,15 +184,4 @@ export const editUser = async (req, res) => {
 };
 
 
-// export const getUserById = async (req, res) => {
-//     try {
-//         const { id } = req.params;
-//         const user = await User.findById(id).select("-password");
-//         if (!user) {
-//             return res.status(404).json({ success: false, message: "User not found" });
-//         }
-//         res.json({ success: true, message: "User fetched successfully", data: user });
-//     } catch (error) {
-//         res.status(error.status || 500).json({ message: error.message || "Internal server error" });
-//     }
-// };
+ 

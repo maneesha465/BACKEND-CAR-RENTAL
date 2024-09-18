@@ -6,6 +6,6 @@ import { authUser } from '../../middlewares/authUser.js';
 const router = express.Router();
 
 router.post('/reviews',authUser, createReview);
-router.get('/reviews/:carId', getReviewsByCar);
+router.get('/reviews/:id', getReviewsByCar);
 
 export default router;

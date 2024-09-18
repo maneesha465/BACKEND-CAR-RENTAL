@@ -1,32 +1,71 @@
 import { cloudinaryInstance } from "../config/cloudinaryConfig.js";
 import { Car } from '../models/carModel.js';
 
-export const createCar = async (req, res) => {
-    try {
-        const { make, model, year, pricePerDay,fuelType,availability,seatingCapacity, engine,service, quality} = req.body;
+// export const createCar = async (req, res) => {
+//     try {
+//         const { make, model, year, pricePerDay,fuelType,availability,seatingCapacity, engine,service, quality} = req.body;
      
-        if(!req.file){
-            return res.status(400).json({message:"image not visible"})
-        }
-               // Upload an image
+//         if(!req.file){
+//             return res.status(400).json({message:"image not visible"})
+//         }
+//                // Upload an image
 
-               const uploadResult = await cloudinaryInstance.uploader.upload(req.file.path).catch((error)=>{
-                console.log(error);
+//                const uploadResult = await cloudinaryInstance.uploader.upload(req.file.path).catch((error)=>{
+//                 console.log(error);
                 
-            })
-             console.log(uploadResult);
+//             })
+//              console.log(uploadResult);
 
-             const newCar = new Car({ make, model, year, pricePerDay, fuelType,availability,seatingCapacity, engine,service, quality });
+//              const newCar = new Car({ make, model, year, pricePerDay, fuelType,availability,seatingCapacity, engine,service, quality });
 
-             if(uploadResult?.url){
-                newCar.image = uploadResult.url;
-             }
+//              if(uploadResult?.url){
+//                 newCar.image = uploadResult.url;
+//              }
     
-        if (!make || !model || !year || !pricePerDay || !fuelType|| !seatingCapacity|| !availability||!engine|| !service|| !quality) {
-            return res.status(400).json({ success: false, message: 'All fields are required' });
-        }
+//         if (!make || !model || !year || !pricePerDay || !fuelType|| !seatingCapacity|| !availability||!engine|| !service|| !quality) {
+//             return res.status(400).json({ success: false, message: 'All fields are required' });
+//         }
 
         
+//         await newCar.save();
+
+//         res.status(201).json({ success: true, message: 'Car created successfully', data: newCar });
+//     } catch (error) {
+//         res.status(500).json({ success: false, message: error.message || 'Internal server error' });
+//     }
+// };
+
+
+export const createCar = async (req, res) => {
+    try {
+        const { make, model, year, pricePerDay, fuelType, seatingCapacity, engine, service, quality } = req.body;
+
+        // Ensure that all required fields are provided, except availability
+        if (!make || !model || !year || !pricePerDay || !fuelType || !seatingCapacity || !engine || !service || !quality) {
+            return res.status(400).json({ success: false, message: 'All fields except availability are required' });
+        }
+
+        // Create a new car object, default availability to true if not provided
+        const newCar = new Car({ 
+            make, 
+            model, 
+            year, 
+            pricePerDay, 
+            fuelType, 
+            availability: req.body.availability ?? true,  // Default to true if not provided
+            seatingCapacity, 
+            engine, 
+            service, 
+            quality 
+        });
+
+        if (req.file) {
+            const uploadResult = await cloudinaryInstance.uploader.upload(req.file.path);
+            if (uploadResult?.url) {
+                newCar.image = uploadResult.url;
+            }
+        }
+
         await newCar.save();
 
         res.status(201).json({ success: true, message: 'Car created successfully', data: newCar });
@@ -34,6 +73,9 @@ export const createCar = async (req, res) => {
         res.status(500).json({ success: false, message: error.message || 'Internal server error' });
     }
 };
+
+
+
 
 export const getAllCars = async (req, res) => {
     try {

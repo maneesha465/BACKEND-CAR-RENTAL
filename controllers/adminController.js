@@ -200,3 +200,21 @@ export const getAllUsers = async (req, res) => {
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   };
+
+
+
+
+  export const getUserBookings = async (req, res) => {
+    try {
+      const userId = req.params.id; // Fetch userId from params
+      const bookings = await Booking.find({ user: userId }).populate('car'); // Query bookings by userId
+  
+      if (!bookings || bookings.length === 0) {
+        return res.status(404).json({ success: false, message: "No bookings found for this user" });
+      }
+  
+      res.status(200).json({ success: true, data: bookings });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Server Error", error });
+    }
+  };
