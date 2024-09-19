@@ -155,3 +155,25 @@ export const getBookingById = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Failed to fetch booking', error });
     }
 };
+
+
+
+
+ // Adjust path as needed
+
+export const getLatestBooking = async (req, res) => {
+  try {
+    // Fetch the most recent booking
+    const latestBooking = await Booking.findOne().sort({ createdAt: -1 }); // Sort by createdAt in descending order to get the latest booking
+    
+    if (!latestBooking) {
+      return res.status(404).json({ success: false, message: 'No bookings found' });
+    }
+
+    res.status(200).json({ success: true, data: latestBooking });
+  } catch (error) {
+    console.error('Error fetching latest booking:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch latest booking', error });
+  }
+};
+

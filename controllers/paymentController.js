@@ -7,8 +7,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export const createCheckoutSession = async (req, res) => {
     try {
       const { bookingData, totalCost } = req.body;
-      console.log('Booking Data:', bookingData);
-console.log('Total Cost:', totalCost);
+//       console.log('Booking Data:', bookingData);
+// console.log('Total Cost:', totalCost);
 
   
       const session = await stripe.checkout.sessions.create({
