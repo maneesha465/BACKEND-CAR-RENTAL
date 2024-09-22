@@ -138,51 +138,50 @@ export const deleteCar = async (req, res) => {
     }
 };
 
+ export const searchCars = async (req, res) => {
+     try {
+         console.log("Query Parameters:", req.query); // Log query params
+
+         const { make } = req.query;
+
+         if (!make) {
+             return res.status(400).json({ success: false, message: "Make parameter is required" });
+         }
+
+         // Perform case-insensitive search for 'make'
+         const cars = await Car.find({ make: new RegExp(make, 'i') });
+
+         res.status(200).json({ success: true, data: cars });
+     } catch (error) {
+         console.error("Search error:", error);
+         res.status(500).json({ success: false, message: "Internal server error" });
+     }
+ };
+
+
+
 // export const searchCars = async (req, res) => {
-//     try {
-//         console.log("Query Parameters:", req.query); // Log query params
+//   try {
+//     console.log("Query Parameters:", req.query); // Log query params
 
-//         const { make } = req.query;
+//     const { make } = req.query;
 
-//         if (!make) {
-//             return res.status(400).json({ success: false, message: "Make parameter is required" });
-//         }
-
-//         // Perform case-insensitive search for 'make'
-//         const cars = await Car.find({ make: new RegExp(make, 'i') });
-
-//         res.status(200).json({ success: true, data: cars });
-//     } catch (error) {
-//         console.error("Search error:", error);
-//         res.status(500).json({ success: false, message: "Internal server error" });
+//     if (!make) {
+//       return res.status(400).json({ success: false, message: "Make parameter is required" });
 //     }
+
+//     // Perform case-insensitive search for 'make' and return distinct car objects
+//     const cars = await Car.aggregate([
+//       { $match: { make: { $regex: new RegExp(make, 'i') } } },
+//       { $group: { _id: "$_id", car: { $first: "$$ROOT" } } }  // Group by _id to ensure uniqueness
+//     ]);
+
+//     // Extract only the car objects from the result
+//     const uniqueCars = cars.map(item => item.car);
+
+//     res.status(200).json({ success: true, data: uniqueCars });
+//   } catch (error) {
+//     console.error("Search error:", error);
+//     res.status(500).json({ success: false, message: "Internal server error" });
+//   }
 // };
-
-
-
-export const searchCars = async (req, res) => {
-    try {
-      console.log("Query Parameters:", req.query); // Log query params
-  
-      const { make } = req.query;
-  
-      if (!make) {
-        return res.status(400).json({ success: false, message: "Make parameter is required" });
-      }
-  
-      // Perform case-insensitive search for 'make' and return distinct car objects
-      const cars = await Car.aggregate([
-        { $match: { make: { $regex: new RegExp(make, 'i') } } },
-        { $group: { _id: "$_id", car: { $first: "$$ROOT" } } }  // Group by _id to ensure uniqueness
-      ]);
-  
-      // Extract only the car objects from the result
-      const uniqueCars = cars.map(item => item.car);
-  
-      res.status(200).json({ success: true, data: uniqueCars });
-    } catch (error) {
-      console.error("Search error:", error);
-      res.status(500).json({ success: false, message: "Internal server error" });
-    }
-  };
-  
