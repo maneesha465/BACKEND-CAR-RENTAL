@@ -87,16 +87,16 @@ export const getReviewsByCar = async (req, res) => {
 // Get reviews by a specific user
 export const getReviewsByUser = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { id } = req.params;
 
     // Check if the user exists
-    const user = await User.findById(userId);
+    const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     // Get reviews by the user, populate car details (make and model only)
-    const reviews = await Review.find({ user: userId }).populate('car', 'make model');
+    const reviews = await Review.find({ user: id }).populate('car', 'make model');
 
     res.status(200).json({ reviews });
   } catch (error) {
@@ -104,20 +104,16 @@ export const getReviewsByUser = async (req, res) => {
   }
 };
 
-// Delete a review
+// In your reviewController.js
 export const deleteReview = async (req, res) => {
   try {
-    const { reviewId } = req.params;
+    const { id } = req.params;
 
-    // Find the review
-    const review = await Review.findById(reviewId);
-    if (!review) {
+    // Find and delete the review
+    const deletedReview = await Review.findByIdAndDelete(id);
+    if (!deletedReview) {
       return res.status(404).json({ message: 'Review not found' });
     }
-
-    // Delete the review and remove it from the car's reviews array
-    await Review.findByIdAndDelete(reviewId);
-    await Car.findByIdAndUpdate(review.car, { $pull: { reviews: reviewId } });
 
     res.status(200).json({ message: 'Review deleted successfully' });
   } catch (error) {
