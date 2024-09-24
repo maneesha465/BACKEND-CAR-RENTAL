@@ -7,6 +7,8 @@ export const createReview = async (req, res) => {
   try {
     const { carId, rating, comment } = req.body;
 
+   
+
     // Input validation
     if (!carId) {
       return res.status(400).json({ success: false, message: "carId is required" });
@@ -18,12 +20,15 @@ export const createReview = async (req, res) => {
 
     // Check if car exists
     const car = await Car.findById(carId);
+   
     if (!car) {
       return res.status(404).json({ success: false, message: "Car not found" });
     }
 
     // Check if user has already reviewed the car
     const existingReview = await Review.findOne({ user: req.user.userId, car: carId });
+   
+   
     if (existingReview) {
       return res.status(400).json({ success: false, message: "You have already reviewed this car" });
     }
@@ -35,7 +40,7 @@ export const createReview = async (req, res) => {
       rating,
       comment
     });
-
+    
     // Save the review
     await newReview.save();
 
@@ -59,9 +64,10 @@ export const createReview = async (req, res) => {
 export const getReviewsByCar = async (req, res) => {
   try {
     const carId = req.params.id; // Directly access `id`
-
+   
     // Check if the car exists
     const car = await Car.findById(carId);
+
     if (!car) {
       return res.status(404).json({ message: 'Car not found' });
     }
@@ -71,7 +77,7 @@ export const getReviewsByCar = async (req, res) => {
       path: 'user',
       select:'name'
     });
-
+    console.log("Fetched reviews:", reviews); 
     res.status(200).json({ reviews });
   } catch (error) {
     res.status(500).json({ message: error.message });
