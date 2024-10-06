@@ -162,29 +162,53 @@ export const deleteCar = async (req, res) => {
 
 export const searchCars = async (req, res) => {
     try {
-      console.log("Query Parameters:", req.query); // Log query params
-  
-      const { make } = req.query;
-  
-      if (!make) {
-        return res.status(400).json({ success: false, message: "Make parameter is required" });
-      }
-  
-      // Perform case-insensitive search for 'make'
-      const cars = await Car.find({ make: new RegExp(make, 'i') });
-  
-      // Filter out duplicates based on car ID if needed
-      const uniqueCars = cars.reduce((acc, car) => {
-        if (!acc.some((item) => item._id.equals(car._id))) {
-          acc.push(car);
+        console.log("Query Parameters:", req.query); // Log query params
+
+        const { make, model } = req.query;
+
+        // Ensure at least one search parameter is provided
+        if (!make && !model) {
+            return res.status(400).json({ success: false, message: "Make or model parameter is required" });
         }
-        return acc;
-      }, []);
-  
-      res.status(200).json({ success: true, data: uniqueCars });
+
+        // Create the search query
+        const query = {};
+        if (make) {
+            query.make = new RegExp(make, 'i'); // Case-insensitive search for make
+        }
+        if (model) {
+            query.model = new RegExp(model, 'i'); // Case-insensitive search for model
+        }
+
+        // Perform search
+        const cars = await Car.find(query);
+
+        res.status(200).json({ success: true, data: cars });
     } catch (error) {
-      console.error("Search error:", error);
-      res.status(500).json({ success: false, message: "Internal server error" });
+        console.error("Search error:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
-  };
-  
+};
+
+
+// export const suggestions = async (req, res) => {
+//     const query = req.query.query || '';
+//     try {
+//         const suggestions = await Car.find({
+//             $or: [
+//                 { make: { $regex: query, $options: 'i' } }, // Case-insensitive matching
+//                 { model: { $regex: query, $options: 'i' } },
+//             ],
+//         }).limit(10).lean(); // Limit the number of suggestions and use .lean() for better performance
+
+//         // Check if suggestions were found
+//         if (suggestions.length === 0) {
+//             return res.status(404).json({ success: true, message: "No suggestions found." });
+//         }
+
+//         res.status(200).json({ success: true, data: suggestions });
+//     } catch (error) {
+//         console.error("Suggestion error:", error);
+//         res.status(500).json({ success: false, message: "Internal server error" });
+//     }
+// };
