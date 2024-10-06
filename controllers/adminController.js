@@ -148,14 +148,19 @@ export const admindeleteUser = async (req, res) => {
     try {
         const { id } = req.params;
         const deletedUser = await User.findByIdAndDelete(id);
+        
         if (!deletedUser) {
             return res.status(404).json({ success: false, message: "User not found" });
         }
+        
+        // Invalidate user session or token here if applicable
+        
         res.json({ success: true, message: "User deleted successfully" });
     } catch (error) {
         res.status(error.status || 500).json({ message: error.message || "Internal server error" });
     }
 };
+
 
 export const getAllUsers = async (req, res) => {
     try {
