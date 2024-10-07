@@ -11,7 +11,7 @@ import dotenv from 'dotenv';
 const app = express();
 
 app.use(cors({
-  origin:'https://frontend-car-rental-vert.vercel.app',         // 'http://localhost:5173',
+  origin:'https://frontend-car-rental-vert.vercel.app',                    //  'http://localhost:5173', 
   credentials:true,
 }))
 app.use(express.json());
