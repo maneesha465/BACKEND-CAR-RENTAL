@@ -3,6 +3,7 @@ import { Admin } from "../models/adminModel.js";
 import { User } from "../models/userModel.js";
 import { generateToken } from "../utils/generateToken.js";
 import { Booking } from "../models/bookingModel.js";
+import { Review } from "../models/reviewModel.js";
 
 // import { generateToken } from "../utils/generateToken.js";
 
@@ -153,6 +154,14 @@ export const admindeleteUser = async (req, res) => {
             return res.status(404).json({ success: false, message: "User not found" });
         }
         
+
+         // Delete the user's reviews
+         await Review.deleteMany({ user: id });
+
+         // Delete the user's bookings
+         await Booking.deleteMany({ user: id });
+ 
+         // Invalidate user session or token here if applicable (optional)
         // Invalidate user session or token here if applicable
         
         res.json({ success: true, message: "User deleted successfully" });

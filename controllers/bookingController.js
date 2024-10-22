@@ -177,3 +177,44 @@ export const getLatestBooking = async (req, res) => {
   }
 };
 
+
+
+
+// backend/controller/bookingController.js
+
+export const updateCarStatus = async (req, res) => {
+    try {
+        const { bookingId } = req.params;
+        const { car_Status } = req.body; // Ensure car_Status is included in the request body
+
+        // Log incoming data for debugging
+        console.log('Update Request:', { bookingId, car_Status });
+
+        // Validate car_Status
+        const validStatuses = ['booked', 'received', 'returned'];
+        if (!validStatuses.includes(car_Status)) {
+            return res.status(400).json({ success: false, message: 'Invalid car status' });
+        }
+
+        const booking = await Booking.findById(bookingId);
+
+        if (!booking) {
+            return res.status(404).json({ success: false, message: 'Booking not found' });
+        }
+
+        booking.car_Status = car_Status; // Update the car_Status field
+
+        await booking.save(); // Make sure to save the updated booking
+
+        res.status(200).json({
+            success: true,
+            message: 'Car status updated successfully',
+            data: booking
+        });
+    } catch (error) {
+        console.error('Error updating car status:', error);
+        res.status(500).json({ success: false, message: 'Failed to update car status', error });
+    }
+};
+
+

@@ -28,6 +28,11 @@ const bookingSchema = new mongoose.Schema({
         enum: ['booked', 'cancelled'],
         default: 'booked',
     },
+    car_Status: {
+         type: String, 
+         enum: ['booked', 'received', 'returned'], 
+         default: 'booked' 
+        },
     createdAt: {
         type: Date,
         default: Date.now,
